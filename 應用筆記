@@ -1,0 +1,43 @@
+'    late binding
+    Dim objword As Object
+    Set objword = CreateObject("Word.Application")
+
+    Dim objdoc As Object
+ 
+'打開已存在的word，並指定給物件
+    Set objdoc = objword.documents.Open("D:\Karen\成長冊_特助\三階生活花絮3月體能OK.docm")
+    
+'在書籤標示位置插入excel儲存格資料
+    objdoc.bookmarks("班級").Range.Text = student.Cells(2, 1).Value
+    objdoc.bookmarks("姓名").Range.Text = student.Cells(2, 2).Value
+    objdoc.bookmarks("日期").Range.Text = student.Cells(2, 3).Value
+    
+'釋放物件
+    Set objword = Nothing
+    Set objdoc = Nothing
+    
+    Dim fileexist As String
+    
+'word會顯現，新增一個word2檔
+    objword.Visible = True 
+    Set objdoc = objword.documents.Add()
+    
+'另存新檔
+    objword.activedocument.SaveAs Filename:="path"
+    
+'關閉word檔
+    objword.activedocument.Close
+
+'在word插入文字及段落
+    objword.Content.InsertAfter "Text"
+    objword.Content.InsertParagraphAfter
+    
+'確認書籤存在
+    If objword.bookmarks.exists("bookmarkname") = True Then
+    End If
+
+'在選定位置新控制項
+    Selection.Range.ContentControls.Add (wdContentControlPicture)
+
+
+End Sub
