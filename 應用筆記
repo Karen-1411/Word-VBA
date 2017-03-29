@@ -25,9 +25,10 @@
 '另存新檔
     objword.activedocument.SaveAs Filename:="path"
     
-'關閉word檔
-    objword.activedocument.Close
-
+'關閉word檔(在excel怪怪的，word沒試過)
+    objword.objdoc.Close()
+    objword.quit()
+    
 '在word插入文字及段落
     objword.Content.InsertAfter "Text"
     objword.Content.InsertParagraphAfter
@@ -39,5 +40,36 @@
 '在選定位置新控制項
     Selection.Range.ContentControls.Add (wdContentControlPicture)
 
+'設定圖片格式
+Sub adjustPictSize()
+    Dim picWidth As Integer
+    Dim picHeight As Integer
+    Dim oIshp As InlineShape
 
+    picHeight = 3.42 * 28.32
+    picWidth = 6.1 * 28.32
+
+    For Each oIshp In ActiveDocument.InlineShapes
+        With oIshp
+            .LockAspectRatio = msoFalse
+            .Height = picHeight
+            .Width = picWidth
+        End With
+    Next oIshp
 End Sub
+
+'讀取控制項的內容
+    Dim DocApp As Object 
+    Dim Documn As Object 
+     
+    Set DocApp = CreateObject("Word.Application") 
+     
+    DocApp.Visible = True 
+    Set Documn = DocApp.Documents.Open("d:\Doc1.docx") 
+     
+    Documn.InlineShapes(1).OLEFormat.Object.Text = "大家好" 
+    MsgBox "資料是：" & Documn.InlineShapes(1).OLEFormat.Object.Text 
+    
+'確認Shape名稱
+'丟入即時運算視窗
+? Selection.ShapeRange.Name
