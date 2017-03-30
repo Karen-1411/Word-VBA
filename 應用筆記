@@ -1,3 +1,5 @@
+'**內容控制項(Content Control)儲存成.docx，會有問題
+
 '    late binding
     Dim objword As Object
     Set objword = CreateObject("Word.Application")
@@ -73,3 +75,54 @@ End Sub
 '確認Shape名稱
 '丟入即時運算視窗
 ? Selection.ShapeRange.Name
+
+'改變Picture Content Control的Picture
+With Wrddoc
+Set oCC1 = .SelectContentControlsByTitle("TabPic").Item(1)
+oCC1.Range.InlineShapes.AddPicture Filename:="X:\XFER\ANDREW-T\DCD " _
+       & LblVL & "Tabs\" & TermPlt & ".jpg", LinkToFile:=False, _
+        Range:=oCC1.Range, SaveWithDocument:=True
+End With
+'Format the shape
+With Wrddoc.oCC1.Range.InlineShapes(1)
+    .LockAspectRatio = msoTrue
+    .ScaleHeight 0.3, True 'height scaled to 30% of original picture size
+    .ScaleWidth 0.3, True 'width scaled to 30% of original picture size
+    .WrapFormat.AllowOverlap = False
+    .WrapFormat.Side = 1 'wdWrapLeft
+    .WrapFormat.Type = 0 'wdWrapSquare
+End With
+
+'將圖片放在書籤設定的位置
+On Error GoTo TabErrorHandler
+Set oCC1 = WordApp.ActiveDocument.Bookmarks("TabPic")
+    oCC1.Range.InlineShapes.AddPicture Filename:=ActiveWorkbook.Path & "\DCD " & LblVL & "Tabs\" & TermPlt & ".jpg", LinkToFile:=False, _
+    Range:=oCC1.Range, SaveWithDocument:=True
+    
+    If ConvKit.Value = False Then
+    On Error GoTo LabelErrorHandler
+Set oCC2 = WordApp.ActiveDocument.Bookmarks("LabelPic")
+    oCC2.Range.InlineShapes.AddPicture Filename:=ActiveWorkbook.Path & "\DCD " & LblVL & "Labels\E" & LblVE & LblSB & LblPole & ".jpg", LinkToFile:=False, _
+    Range:=oCC2.Range, SaveWithDocument:=True
+    End If
+   
+'convert a InlineShape to a Shape
+' \\ This sub will convert a InlineShape to a Shape
+Sub ConvertToShape() 
+    With Selection 
+         ' \\ If we selected a InlineShape then convert to Shape
+        If .Type = wdSelectionInlineShape Then 
+            .InlineShapes(1).ConvertToShape 
+        End If 
+    End With 
+End Sub 
+ 
+ ' \\ This sub will convert a Shape to a InlineShape
+Sub ConvertToInlineShape() 
+    With Selection 
+         ' \\ If we selected a Shape then convert to InlineShape
+        If .Type = wdSelectionShape Then 
+            .ShapeRange(1).ConvertToInlineShape 
+        End If 
+    End With 
+End Sub 
