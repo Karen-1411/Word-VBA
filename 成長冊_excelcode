@@ -1,0 +1,55 @@
+Sub memory()
+    
+'    late binding
+    Dim objword As Object
+    Set objword = CreateObject("Word.Application")
+
+    Dim objdoc As Object
+    
+    Dim student As Worksheet
+    
+    Dim bookmarkn As String
+    Dim ccount, rcount, i, j As Integer
+    
+'    Dim start, final As Double
+'
+'    start = Timer
+    
+    Set student = Sheets(1)
+    
+    ccount = student.Cells(1, Columns.Count).End(xlToLeft).Column
+    rcount = student.Cells(Rows.Count, 1).End(xlUp).Row
+    
+    For j = 2 To rcount Step 1
+
+        Set objdoc = objword.documents.Open _
+            ("D:\Karen\成長冊_特助\三階生活花絮6月藝術欣賞OK\三階生活花絮6月藝術欣賞_xbo.docm")
+        
+        For i = 2 To ccount Step 1
+        
+            bookmarkn = student.Cells(1, i).Value
+            
+            If objdoc.bookmarks.exists(bookmarkn) = True Then
+                objdoc.bookmarks(bookmarkn).Range.Text = student.Cells(j, i).Value
+            Else
+                MsgBox "沒有"" & bookmarkn &  ""這個書籤喔！" & Chr(10) & "請到此資料夾中有巨集的word確認(有驚嘆號的) :)"
+                Exit Sub
+            End If
+            
+        Next
+        
+        objword.Run macroname:="forteacher"
+    
+    Next
+    
+'    final = Timer
+'
+'    MsgBox final - start
+    
+    Set objword = Nothing
+    Set objdoc = Nothing
+    
+    Set student = Nothing
+    
+
+End Sub
