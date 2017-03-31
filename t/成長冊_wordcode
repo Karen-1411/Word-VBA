@@ -1,0 +1,81 @@
+Sub forteacher()
+
+    Dim targets As Shape
+    Dim targetis As InlineShape
+    Dim ranges, rngstart, rngend As Range
+    Dim rotations, widths, heights, lefts, tops As Double
+    Dim namebm, pathshape, shapenum, named() As String
+    Dim docxbo As Document
+    Dim i, shapecount As Integer
+    
+    On Error GoTo errorhandle
+    
+    Set docxbo = ThisDocument
+    
+    Application.ScreenUpdating = False
+    
+    '取得姓名：namebm
+    Set rngstart = docxbo.Bookmarks("姓名").Range
+    Set rngend = docxbo.Bookmarks("姓名end").Range
+    docxbo.Range(rngstart.Start, rngend.End).Select
+    namebm = Trim(Selection.Text)
+    
+    named = Split(docxbo.Name, ".")
+    
+    shapecount = docxbo.Shapes.Count
+    pathshape = docxbo.Path
+    For i = 1 To shapecount Step 1
+        
+        Set targets = docxbo.Shapes(i)
+    
+        If targets.Title Like "Shape" & "*" Then
+        
+            i = i - 1
+        
+            shapenum = Right(targets.Title, 1)
+            
+            Set ranges = targets.Anchor
+
+            With targets
+                lefts = .Left
+                tops = .Top
+                rotations = .Rotation
+                widths = .Width
+                heights = .Height
+            End With
+            
+            targets.Delete
+
+            Set targetis = docxbo.InlineShapes.AddPicture _
+                (FileName:=pathshape & "\三階生活花絮6月藝術欣賞_" & namebm & "_" & shapenum & ".jpg", SaveWithDocument:=True, Range:=ranges)
+
+            Set targets = targetis.ConvertToShape
+
+            With targets
+                .Left = lefts
+                .Top = tops
+                .Rotation = rotations
+                .Width = widths
+                .Height = heights
+            End With
+        Else
+        End If
+    
+    Next
+    
+    Application.ScreenUpdating = True
+    
+    docxbo.SaveAs2 FileName:=pathshape & "\" & named(0) & "_" & namebm & ".docx", fileformat:=wdFormatDocumentDefault
+    docxbo.Close
+    
+    Set targets = Nothing
+    Set targetis = Nothing
+    Set ranges = Nothing
+    Set rngstart = Nothing
+    Set rngend = Nothing
+    Set docxbo = Nothing
+
+errorhandle:
+    Application.Quit
+
+End Sub
