@@ -1,1 +1,191 @@
+Option Explicit
 
+Sub forteacher()
+
+    Dim targets As Shape
+    Dim targetis As InlineShape
+    Dim ranges, rngstart, rngend As Range
+    Dim rotations, widths, heights, lefts, tops As Double
+    Dim namebm, pathshape, shapenum, named() As String
+    Dim stype() As String
+    
+    Dim docxbo As Document
+    Dim i, shapecount As Integer
+    
+    On Error GoTo errorhandle
+    
+    Set docxbo = ThisDocument
+    
+    Application.ScreenUpdating = False
+    
+    '取得姓名：namebm
+    Set rngstart = docxbo.Bookmarks("姓名").Range
+    Set rngend = docxbo.Bookmarks("姓名end").Range
+    docxbo.Range(rngstart.Start, rngend.End).Select
+    namebm = Trim(Selection.Text)   '去除空白
+    
+    named = Split(docxbo.Name, ".") '以陣列儲存
+    
+    shapecount = docxbo.Shapes.Count    '儲存檔案圖片數量
+    pathshape = docxbo.Path '儲存檔案路徑(不含檔名)
+    For i = 1 To shapecount Step 1
+        
+        Set targets = docxbo.Shapes(i)
+    
+        If targets.Title Like "圖" & "*" Then
+        
+            shapenum = Right(targets.Title, 1)  '讀取圖片標題編號
+            
+            '確認圖片檔存在
+            If Dir(pathshape & "\" & named(0) & "-" & namebm & "-" & shapenum & ".*") <> "" Then
+            
+                i = i - 1   '因為會刪除一張圖
+        
+                Set ranges = targets.Anchor
+    
+                '儲存模板設置圖片參數
+                With targets
+                    lefts = .Left
+                    tops = .Top
+                    rotations = .Rotation
+                    widths = .Width
+                    heights = .Height
+                End With
+                
+                targets.Delete '刪除模板範例圖
+                
+                stype = Split(Dir(pathshape & "\" & named(0) & "-" & namebm & "-" & shapenum & ".*"), ".")
+                
+                '這樣圖片設定才不會跑掉
+                Set targetis = docxbo.InlineShapes.AddPicture _
+                    (FileName:=pathshape & "\" & named(0) & "-" & namebm & "-" & shapenum & "." & stype(1), SaveWithDocument:=True, Range:=ranges)
+                
+                Set targets = targetis.ConvertToShape
+    
+                With targets
+                    .Left = lefts
+                    .Top = tops
+                    .Rotation = rotations
+                    .Width = widths
+                    .Height = heights
+                End With
+            Else
+                MsgBox namebm & "的圖片檔找不到:(" & Chr(10) & _
+                    "請確認有存在這個資料夾並且檔名命名方式正確，謝謝！" & _
+                    Chr(10) & "按""確定""後，程式會繼續運行，請等待運行完畢再確認檔案:)"
+    
+                Application.ScreenUpdating = True
+    
+                '儲存檔案
+                docxbo.SaveAs2 FileName:=pathshape & "\" & named(0) & "_" & namebm & ".docx", _
+                    FileFormat:=wdFormatDocumentDefault
+                docxbo.Close
+                
+                '釋放物件
+                Set targets = Nothing
+                Set targetis = Nothing
+                Set ranges = Nothing
+                Set rngstart = Nothing
+                Set rngend = Nothing
+                Set docxbo = Nothing
+                
+                Application.Quit
+            End If
+        '更改隱藏圖片的設定，以確認老師有使用程式碼
+        ElseIf targets.Title = "mymark" Then
+            targets.Title = "林小希"
+        ElseIf targets.Title = "底圖" Then
+        
+            '確認圖片檔存在
+            If Dir(pathshape & "\" & "底圖" & ".*") <> "" Then
+            
+                i = i - 1   '因為會刪除一張圖
+        
+                Set ranges = targets.Anchor
+    
+                '儲存模板設置圖片參數
+                With targets
+                    lefts = .Left
+                    tops = .Top
+                    rotations = .Rotation
+                    widths = .Width
+                    heights = .Height
+                End With
+                
+                targets.Delete '刪除模板範例圖
+                
+                stype = Split(Dir(pathshape & "\" & "底圖" & ".*"), ".")
+                
+                '這樣圖片設定才不會跑掉
+                Set targetis = docxbo.InlineShapes.AddPicture _
+                    (FileName:=pathshape & "\" & "底圖" & "." & stype(1), SaveWithDocument:=True, Range:=ranges)
+                
+                Set targets = targetis.ConvertToShape
+    
+                With targets
+                    .Left = lefts
+                    .Top = tops
+                    .Rotation = rotations
+                    .Width = widths
+                    .Height = heights
+                    .ZOrder msoSendBehindText
+                End With
+            
+            End If
+            
+        End If
+    
+    Next
+    
+
+    Application.ScreenUpdating = True
+    
+    '儲存檔案
+    docxbo.SaveAs2 FileName:=pathshape & "\" & named(0) & "_" & namebm & ".docx", _
+        FileFormat:=wdFormatDocumentDefault
+    docxbo.Close
+    
+    '釋放物件
+    Set targets = Nothing
+    Set targetis = Nothing
+    Set ranges = Nothing
+    Set rngstart = Nothing
+    Set rngend = Nothing
+    Set docxbo = Nothing
+
+errorhandle:
+    Application.Quit
+
+End Sub
+
+Sub test()
+
+    Application.Quit
+'MsgBox Dir("D:\Karen\成長冊\三階生活花絮6月藝術欣賞OK\三階生活花絮6月藝術欣賞.docm")
+   
+End Sub
+
+Sub mark()
+
+    Dim i, shapecount As Integer
+    Dim docxbo As Document
+    Dim targets As Shape
+    
+    Set docxbo = ThisDocument
+    shapecount = docxbo.Shapes.Count
+    
+    For i = 1 To shapecount Step 1
+    
+        Set targets = docxbo.Shapes(i)
+    
+        If targets.Title = "mymark" Then
+        
+            targets.Visible = msoFalse
+            
+        End If
+    
+    Next
+    
+    Set docxbo = Nothing
+    
+End Sub
