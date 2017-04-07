@@ -1,21 +1,32 @@
+Option Explicit
+
 Sub memory()
     
-'    late binding
+CommandButton1.BackColor = RGB(204, 192, 218)
+    
+    '    late binding
     Dim objword As Object
     Set objword = CreateObject("Word.Application")
-
+    
+'Word模板
     Dim objdoc As Object
     
+'儲存學生資料的worksheet
     Dim student As Worksheet
-    
-    Dim bookmarkn As String
+
+'宣告
+    Dim bookmarkn, pathshape, named() As String
     Dim ccount, rcount, i, j As Integer
-    
+
+'計時開始
 '    Dim start, final As Double
 '
 '    start = Timer
     
+'初始化
     Set student = Sheets(1)
+    pathshape = ThisWorkbook.Path
+    named = Split(ThisWorkbook.Name, ".")   '儲存檔名(不包含副檔名)
     
     ccount = student.Cells(1, Columns.Count).End(xlToLeft).Column
     rcount = student.Cells(Rows.Count, 1).End(xlUp).Row
@@ -23,7 +34,7 @@ Sub memory()
     For j = 2 To rcount Step 1
 
         Set objdoc = objword.documents.Open _
-            ("D:\Karen\成長冊_特助\三階生活花絮6月藝術欣賞OK\三階生活花絮6月藝術欣賞_xbo.docm")
+            (pathshape & "\" & named(0) & ".docm", ReadOnly:=True)
         
         For i = 2 To ccount Step 1
         
@@ -42,6 +53,9 @@ Sub memory()
     
     Next
     
+    CommandButton1.BackColor = &HC0C0FF
+
+'計時結束
 '    final = Timer
 '
 '    MsgBox final - start
@@ -50,6 +64,7 @@ Sub memory()
     Set objdoc = Nothing
     
     Set student = Nothing
+
     
 
 End Sub
