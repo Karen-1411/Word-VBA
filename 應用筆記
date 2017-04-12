@@ -145,4 +145,10 @@ Sub MergeAllDocuments(AllDocumentsPath as String, MasterDocumentPath as String)
   MasterDocument.Save
 End Sub
 
-MergeAllDocuments "C:\MySeparateDocuments\*.doc", "C:\MasterDocument.doc"
+sub letmerge()
+
+    MergeAllDocuments "C:\MySeparateDocuments\*.doc", "C:\MasterDocument.doc"
+
+end sub
+
+'**唯讀檔可以編輯但必須另存新檔
