@@ -126,3 +126,23 @@ Sub ConvertToInlineShape()
         End If 
     End With 
 End Sub 
+
+'Merge multiple documents into one document '格式會跑掉
+Sub MergeAllDocuments(AllDocumentsPath as String, MasterDocumentPath as String)
+  Dim MasterDocument As Document
+
+  Set MasterDocument = Documents.Open(FileName:=MasterDocumentPath)
+
+  TheDocumentPath = Dir(AllDocumentsPath , vbNormal)
+  While TheDocumentPath <> ""
+    ' Append the next doc to the end of the master doc. (The 
+    ' special "\EndOfDoc" bookmark is always available!)
+    MasterDocument.Bookmarks("\EndOfDoc").Range.InsertFile "C:\MySeparateDocuments\" & TheDocumentPath
+    '**書籤有Word預先定義好的https://msdn.microsoft.com/zh-tw/library/office/ff836079.aspx
+    TheDocumentPath = Dir
+  Wend
+
+  MasterDocument.Save
+End Sub
+
+MergeAllDocuments "C:\MySeparateDocuments\*.doc", "C:\MasterDocument.doc"
