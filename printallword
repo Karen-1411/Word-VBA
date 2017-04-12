@@ -1,0 +1,32 @@
+Private Sub printallword_Click()
+
+    '    late binding
+    Dim objword As Object
+    Set objword = CreateObject("Word.Application")
+    
+    Dim objdoc As Object '要列印的Word檔
+    Dim wordlocation, filepath As String
+    
+    filepath = ThisWorkbook.Path
+    wordlocation = Dir(filepath & "\*.docx")
+    
+    On Error GoTo errorhandle
+    Do While wordlocation <> ""
+        
+        Set objdoc = objword.documents.Open(filepath & "\" & wordlocation, ReadOnly:=True)
+        objdoc.PrintOut collate:=True, Background:=False
+        
+        objdoc.Close
+        
+        wordlocation = Dir
+    
+    Loop
+    
+errorhandle:
+
+    objword.Quit
+    
+    Set objword = Nothing
+    Set objdoc = Nothing
+
+End Sub
