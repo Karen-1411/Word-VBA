@@ -1,0 +1,41 @@
+Private Sub saveasforteacher_Click()
+
+    Dim namechaad As Variant
+    Dim nameorgar() As String
+    Dim dialogsaveas As Dialog
+    Dim i As Integer
+    Dim targets As Shape
+    
+    Set dialogsaveas = Dialogs(wdDialogFileSaveAs)
+    
+    nameorgar() = Split(ThisDocument.Name, ".")
+
+    With dialogsaveas
+
+        .Name = nameorgar(0) & Format(Date, "yyyymmdd")
+        .Format = wdFormatXMLDocumentMacroEnabled
+        If .Display = -1 And .Name <> ThisDocument.FullName Then
+            
+            ThisDocument.Unprotect Password:="14110408"
+            
+            For i = 1 To ThisDocument.Shapes.Count Step 1
+    
+                Set targets = ThisDocument.Shapes(i)
+        
+                If targets.OLEFormat.Object.Caption = "另存模板" Then
+                    targets.Delete
+                    Exit For
+                End If
+
+            Next
+            
+            ThisDocument.SaveAs2 _
+                FileName:=.Name, _
+                fileformat:=wdFormatXMLDocumentMacroEnabled
+        End If
+
+    End With
+
+    Set dialogsaveas = Nothing
+
+End Sub
