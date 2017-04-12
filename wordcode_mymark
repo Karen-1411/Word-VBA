@@ -1,0 +1,24 @@
+Sub mark()
+
+    Dim i, shapecount As Integer
+    Dim docxbo As Document
+    Dim targets As Shape
+    
+    Set docxbo = ThisDocument
+    shapecount = docxbo.Shapes.Count
+    
+    For i = 1 To shapecount Step 1
+    
+        Set targets = docxbo.Shapes(i)
+    
+        If targets.Title = "mymark" Then
+        
+            targets.Visible = msoFalse
+            
+        End If
+    
+    Next
+    
+    Set docxbo = Nothing
+    
+End Sub
