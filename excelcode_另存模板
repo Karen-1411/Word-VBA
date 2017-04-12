@@ -1,0 +1,30 @@
+
+Private Sub saveforteacher_Click()
+
+    Dim nameorgar() As String
+    Dim namechaad As Variant
+    Dim i As Integer
+    
+    nameorgar() = Split(ThisWorkbook.Name, ".")
+    
+    namechaad = Application.GetSaveAsFilename( _
+        InitialFileName:=nameorgar(0) & Format(Date, "yyyymmdd"), _
+        FileFilter:="Microsoft Excel Macro-Enabled Worksheet (*.xlsm), *.xlsm", _
+        Title:="另存模板")
+        
+    If namechaad <> False And namechaad <> ThisWorkbook.FullName Then
+
+        ThisWorkbook.SaveAs _
+            Filename:=namechaad, _
+            FileFormat:=xlOpenXMLWorkbookMacroEnabled, _
+            ConflictResolution:=xlLocalSessionChanges
+    
+    End If
+    
+    For i = 1 To Sheets.Count Step 1
+    
+        Sheets(i).Unprotect Password:="14110408"
+        
+    Next
+
+End Sub
