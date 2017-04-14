@@ -2,7 +2,7 @@ Option Explicit
 
 Sub memory()
     
-CommandButton1.BackColor = RGB(204, 192, 218)
+provideword.BackColor = RGB(204, 192, 218)
     
     '    late binding
     Dim objword As Object
@@ -13,10 +13,12 @@ CommandButton1.BackColor = RGB(204, 192, 218)
     
 '儲存學生資料的worksheet
     Dim student As Worksheet
+'儲存共同資料的worksheer
+    Dim same As Worksheet
 
 '宣告
     Dim bookmarkn, pathshape, named() As String
-    Dim ccount, rcount, i, j As Integer
+    Dim ccountst, ccountsa, rcount, i, j As Integer
 
 '計時開始
 '    Dim start, final As Double
@@ -24,36 +26,45 @@ CommandButton1.BackColor = RGB(204, 192, 218)
 '    start = Timer
     
 '初始化
-    Set student = Sheets(1)
+    Set student = Sheets("Student")
+    Set same = Sheets("共同")
     pathshape = ThisWorkbook.Path
     named = Split(ThisWorkbook.Name, ".")   '儲存檔名(不包含副檔名)
     
-    ccount = student.Cells(1, Columns.Count).End(xlToLeft).Column
+    ccountst = student.Cells(1, Columns.Count).End(xlToLeft).Column
+    ccountsa = same.Cells(1, Columns.Count).End(xlToLeft).Column
     rcount = student.Cells(Rows.Count, 1).End(xlUp).Row
     
     For j = 2 To rcount Step 1
 
         Set objdoc = objword.documents.Open _
             (pathshape & "\" & named(0) & ".docm", ReadOnly:=True)
-        
-        For i = 2 To ccount Step 1
+    '個別部分
+        For i = 1 To ccountst Step 1
         
             bookmarkn = student.Cells(1, i).Value
             
             If objdoc.bookmarks.exists(bookmarkn) = True Then
                 objdoc.bookmarks(bookmarkn).Range.Text = student.Cells(j, i).Value
-            Else
-                MsgBox "沒有"" & bookmarkn &  ""這個書籤喔！" & Chr(10) & "請到此資料夾中有巨集的word確認(有驚嘆號的) :)"
-                Exit Sub
             End If
             
         Next
+    '共同部分
+        For i = 1 To ccountsa Step 1
         
-        objword.Run macroname:="forteacher"
+            bookmarkn = same.Cells(1, i).Value
+            
+            If objdoc.bookmarks.exists(bookmarkn) = True And Not same.Cells(2, i).Value Like "圖片*" Then
+                objdoc.bookmarks(bookmarkn).Range.Text = same.Cells(2, i).Value
+            End If
+        
+        Next
+            
+            objword.Run macroname:="forteacher"
     
     Next
     
-    CommandButton1.BackColor = &HC0C0FF
+    provideword.BackColor = &HC0C0FF
 
 '計時結束
 '    final = Timer
@@ -64,7 +75,6 @@ CommandButton1.BackColor = RGB(204, 192, 218)
     Set objdoc = Nothing
     
     Set student = Nothing
-
-    
+    Set same = Nothing
 
 End Sub
