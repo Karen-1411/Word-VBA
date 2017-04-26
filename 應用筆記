@@ -152,3 +152,17 @@ sub letmerge()
 end sub
 
 '**唯讀檔可以編輯但必須另存新檔
+
+'shape 外框線條屬性設定
+With Selection.ShapeRange.Line
+    
+    .Visible = msoTrue
+    .ForeColor.ObjectThemeColor = msoThemeColorAccent2
+    .ForeColor.TintAndShade = 0
+    .ForeColor.Brightness = 0.400000006
+    .Transparency = 0
+    .DashStyle = msoLineSysDash
+    .Weight = 2.25
+
+End With
+
