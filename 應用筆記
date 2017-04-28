@@ -166,3 +166,6 @@ With Selection.ShapeRange.Line
 
 End With
 
+'長度單位換算
+1 inch = 2.54 cm = 72 point 
+1 cm ~= 28.3465 point 
